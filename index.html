@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xenon Key Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(135deg, #1A0030, #003D7A);
+            color: #FFFFFF;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .label {
+            font-size: 1.2em;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+        }
+
+        .key-box {
+            flex-grow: 1;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #ffffff;
+            font-size: 16px;
+            color: #333;
+            word-break: break-all;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .key-box:hover {
+            transform: perspective(500px) rotateY(15deg);
+        }
+
+        .copy-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="label">Your xenon key:</div>
+        <input type="text" id="keyBox" class="key-box" readonly>
+        <button class="copy-button" onclick="copyKey()">Copy</button>
+    </div>
+
+    <script>
+        // Function to generate a random 20-character key starting with 'xenon-'
+        function generateRandomKey() {
+            const prefix = 'xenon-';
+            const randomPart = Array.from({ length: 14 }, () => Math.floor(Math.random() * 10)).join('');
+            return prefix + randomPart;
+        }
+
+        // Function to get the current time in milliseconds
+        function getCurrentTime() {
+            return new Date().getTime();
+        }
+
+        // Function to initialize the key
+        function initializeKey() {
+            const keyBox = document.getElementById('keyBox');
+            const keyData = localStorage.getItem('keyData');
+
+            if (keyData) {
+                const { key, timestamp } = JSON.parse(keyData);
+                const currentTime = getCurrentTime();
+
+                // Check if the key is still valid (within 5 hours)
+                if (currentTime - timestamp < 5 * 60 * 60 * 1000) {
+                    keyBox.value = key;
+                    return;
+                }
+            }
+
+            // Generate a new key and store it with the current timestamp
+            const newKey = generateRandomKey();
+            localStorage.setItem('keyData', JSON.stringify({
+                key: newKey,
+                timestamp: getCurrentTime()
+            }));
+            keyBox.value = newKey;
+        }
+
+        // Function to copy the key to the clipboard
+        function copyKey() {
+            const keyBox = document.getElementById('keyBox');
+            keyBox.select();
+            document.execCommand('copy');
+            alert('Key copied to clipboard!');
+        }
+
+        // Initialize the key on page load
+        document.addEventListener('DOMContentLoaded', initializeKey);
+    </script>
+</body>
+</html>
