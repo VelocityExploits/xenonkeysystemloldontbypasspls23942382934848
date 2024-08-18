@@ -77,7 +77,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="label">Your xenon key:</div>
+        <div class="label">Your Xenon key:</div>
         <input type="text" id="keyBox" class="key-box" readonly>
         <button class="copy-button" onclick="copyKey()">Copy</button>
     </div>
@@ -117,7 +117,15 @@
                 key: newKey,
                 timestamp: getCurrentTime()
             }));
+
             keyBox.value = newKey;
+
+            // Send the key to the server to be saved
+            fetch('save_key.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ key: newKey })
+            }).catch(error => console.error('Error saving key:', error));
         }
 
         // Function to copy the key to the clipboard
